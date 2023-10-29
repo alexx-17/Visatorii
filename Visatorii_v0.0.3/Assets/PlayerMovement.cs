@@ -7,7 +7,8 @@ public class PlayerMovement : MonoBehaviour
 {
 
     public float MoveSpeed;
-    bool reachedObjective;
+    bool reachedObjective = false;
+    bool reachedExitPoint = false;
 
     public Rigidbody2D rb;
     public Animator animator;
@@ -18,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     public TextMeshPro text;
     public SpriteRenderer sageata;
     public Collider2D ExitCollider;
+    public Transition transitionManager; // asta e celalalt script
+    public Camera mainCamera;
 
     Vector2 Movement;
     Vector3 iadesMovement;
@@ -34,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
         //poti sa modifici astea depinde unde vrei sa fie iades ul fata de player
 
         text.text = "";
+
     }
 
     // Update is called once per frame
@@ -80,6 +84,26 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+
+    IEnumerator makeTransition()
+    {
+        //Debug.Log("a iesit");
+        transitionManager.startTransition = true;
+        //fade out
+
+        yield return new WaitForSeconds(1);
+
+        mainCamera.backgroundColor = new Color(0f, 0.45f, 0f, 1f);
+        //nu ma intreba cum functioneaza culorile in unity
+        sageata.enabled = false;
+
+        yield return new WaitForSeconds(1);
+
+        transitionManager.startTransition = true;
+        //fade in
+        //Debug.Log("a intrat");
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
 
@@ -94,9 +118,10 @@ public class PlayerMovement : MonoBehaviour
             sageata.enabled = true;
         }
 
-        if(collider == ExitCollider)
+        if(collider == ExitCollider && reachedObjective == true && reachedExitPoint == false)
         {
-            //a iesit
+            reachedExitPoint = true;
+            StartCoroutine(makeTransition());
         }
     }
 
