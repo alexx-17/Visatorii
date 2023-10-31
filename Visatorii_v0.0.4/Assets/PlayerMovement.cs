@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -65,6 +67,43 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    IEnumerator makeTransition1()
+    {
+        //Debug.Log("a iesit");
+        transitionManager.startTransition = true;
+        //fade out
+
+        yield return new WaitForSeconds(1);
+
+        mainCamera.backgroundColor = new Color(0f, 0.45f, 0f, 1f);
+        //nu ma intreba cum functioneaza culorile in unity
+        sageata.enabled = false;
+        text.text = "";
+
+        yield return new WaitForSeconds(1);
+
+        transitionManager.startTransition = true;
+
+        lopataRender.enabled = true;
+        //fade in
+        //Debug.Log("a intrat");
+    }
+
+    IEnumerator makeTransition2()
+    {
+        yield return new WaitForSeconds(1);
+
+        transitionManager.startTransition = true;
+
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene("Scene2");
+
+        //daca te intrebi unde e fade in ul
+        //e fct din inspector ca asa a fost cel mai usor
+        //daca te uiti pe camera pe scena 2 o sa vezi ca sunt bifate si casuta cu startFadeOut si cu startTransition
+        //mi era lene sa fac un script nou si d aia (sper ca nu te supi)
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -101,7 +140,9 @@ public class PlayerMovement : MonoBehaviour
                     if(cnt == 5)
                     {
                         digging = false;
+
                         //sta 2 sec si dupa tranzitie nebuna
+                        StartCoroutine(makeTransition2());
                     }
                 }
                 else
@@ -152,27 +193,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    IEnumerator makeTransition()
-    {
-        //Debug.Log("a iesit");
-        transitionManager.startTransition = true;
-        //fade out
-
-        yield return new WaitForSeconds(1);
-
-        mainCamera.backgroundColor = new Color(0f, 0.45f, 0f, 1f);
-        //nu ma intreba cum functioneaza culorile in unity
-        sageata.enabled = false;
-        text.text = "";
-
-        yield return new WaitForSeconds(1);
-
-        transitionManager.startTransition = true;
-
-        lopataRender.enabled = true;
-        //fade in
-        //Debug.Log("a intrat");
-    }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
@@ -191,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
         if(collider == ExitCollider && reachedObjective == true && reachedExitPoint == false)
         {
             reachedExitPoint = true;
-            StartCoroutine(makeTransition());
+            StartCoroutine(makeTransition1());
         }
 
         if(collider == objectiveCollider && reachedObjective == true && reachedExitPoint == true)
@@ -206,7 +226,7 @@ public class PlayerMovement : MonoBehaviour
             blockRender.enabled = true;
 
             digging = true;
-            cursorMovement.x = 4f;
+            cursorMovement.x = 3f;
             blockPos = blockTransform.position;
             cnt = 0;
         }
