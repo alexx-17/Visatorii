@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform lopataTransform;
     public SpriteRenderer lopataRender;
     public SpriteRenderer iadesRender;
+    public AudioPlay audioManager;
     
     public SpriteRenderer dirtPileRender;
     public Sprite[] dirtSprites;
@@ -62,6 +63,9 @@ public class PlayerMovement : MonoBehaviour
         lopataMovement.x = 0.6f;
         lopataMovement.y = 0f;
         lopataMovement.z = 0f;
+
+        Movement.x = 0f;
+        Movement.y = 0f;
 
         text.text = "";
 
@@ -104,11 +108,15 @@ public class PlayerMovement : MonoBehaviour
         //mi era lene sa fac un script nou si d aia (sper ca nu te supi)
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
         Movement.x = 0;
         Movement.y = 0;
+
+
 
         if (Input.GetAxisRaw("Horizontal") != 0 && digging == false)
         {
@@ -144,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
                     else
                     {
                         cursorMovement.x -= 0.3f;
-                        Debug.Log(cursorMovement.x);
+                       //  Debug.Log(cursorMovement.x);
                     }
 
                     if (cnt == 5)
@@ -175,6 +183,15 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.MovePosition(rb.position + Movement * MoveSpeed * Time.fixedDeltaTime);
 
+        if(Movement.sqrMagnitude <= 0)
+        {
+            audioManager.play_sound();
+
+            //nu ma intreba cum merge sau dc merge dar merge
+            //singurul lucru e ca se aude un singur pas cand incarci jocul la inceput si nu cred ca poti sa i faci ceva
+            //dar dam sonorul incet la inceput cand prezentam sa nu se auda :)
+        }
+
         if(reachedObjective == false)
         {
             iadesTransform.position = playerTransform.position + iadesMovement;
@@ -195,7 +212,7 @@ public class PlayerMovement : MonoBehaviour
 
         if(digging == true)
         {
-            Debug.Log(cursorMovement.x);
+            // Debug.Log(cursorMovement.x);
 
             cursorTransform.position += cursorMovement * Time.fixedDeltaTime;
             if (cursorTransform.position.x >= 5.4542 || cursorTransform.position.x <= 3.1542)
