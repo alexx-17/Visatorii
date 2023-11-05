@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.U2D.Aseprite;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovementCave : MonoBehaviour
 {
     float MoveSpeed, paianjenSpeed;
     bool running;
+    bool reachedEnd = false;
 
     public Rigidbody2D rb;
     public Animator animator;
@@ -16,6 +19,7 @@ public class PlayerMovementCave : MonoBehaviour
     public TextMeshPro text;
     public Transform paianjenTransform;
     public Collider2D paianjenCollider;
+    public Transition transitionManager;
 
     Vector2 Movement;
     Vector3 cameraOffset; //haha offset e artist bun haha
@@ -53,6 +57,55 @@ public class PlayerMovementCave : MonoBehaviour
         }
     }
 
+    IEnumerator makeTransition1()
+    {
+        transitionManager.startTransition = true;
+
+        yield return new WaitForSeconds(1);
+
+        // ti am mutat codul aici
+        running = true;
+
+        cameraOffset.x = 12f;
+        cameraOffset.y = playerTransform.position.y;
+        cameraOffset.z = 0;
+        playerTransform.position = cameraOffset;
+        cameraOffset.x = 7.8f;
+        cameraOffset.y = 2.5f + playerTransform.position.y;
+        cameraOffset.z = -10;
+        cameraTransform.position = cameraOffset;
+        cameraOffset.x = 0;
+        cameraOffset.y = 2.5f;
+
+        animator.SetFloat("Horizontal", 0);
+        animator.SetFloat("Speed", 0);
+
+        paianjenMovement.x = 23f;
+        paianjenTransform.position = paianjenMovement;
+
+        text.text = "Apasa click pe caracter pentru a alerga!";
+
+        transitionManager.startTransition = true;
+    }
+
+    IEnumerator makeTransitionToBook()
+    {
+        transitionManager.startTransition = true;
+
+        yield return new WaitForSeconds(2);
+
+        SceneManager.LoadScene("Scene3");
+    }
+
+    IEnumerator makeTransitionToLoseScreen()
+    {
+        transitionManager.startTransition = true;
+
+        yield return new WaitForSeconds(2);
+
+        SceneManager.LoadScene("LoseScreen");
+    }
+
     private void FixedUpdate()
     {
         rb.MovePosition(rb.position + Movement * MoveSpeed * Time.fixedDeltaTime);
@@ -82,10 +135,12 @@ public class PlayerMovementCave : MonoBehaviour
             cameraOffset.y = 2.5f;
         }
 
-        if(playerTransform.position.x <= -7.7 && running == true)
+        if(playerTransform.position.x <= -7.3 && running == true && reachedEnd == false)
         {
             //tranzitie catre carte
 
+            reachedEnd = true;
+            StartCoroutine(makeTransitionToBook());
         }
 
     }
@@ -95,33 +150,13 @@ public class PlayerMovementCave : MonoBehaviour
         if(collider == scheletCollider && running == false)
         {
             //fade out, fade in
-
-            running = true;
-
-            cameraOffset.x = 12f;
-            cameraOffset.y = playerTransform.position.y;
-            cameraOffset.z = 0;
-            playerTransform.position = cameraOffset;
-            cameraOffset.x = 7.8f;
-            cameraOffset.y = 2.5f + playerTransform.position.y;
-            cameraOffset.z = -10;
-            cameraTransform.position = cameraOffset;
-            cameraOffset.x = 0;
-            cameraOffset.y = 2.5f;
-
-            animator.SetFloat("Horizontal", 0);
-            animator.SetFloat("Speed", 0);
-
-            paianjenMovement.x = 23f;
-            paianjenTransform.position = paianjenMovement;
-
-            text.text = "Apasa click pe caracter pentru a alerga!";
+            StartCoroutine(makeTransition1());
         }
 
         if(collider == paianjenCollider)
         {
             //lose screen
-
+            StartCoroutine(makeTransitionToLoseScreen());
             Debug.Log("MORT, AI MURIT!");
         }
     }
