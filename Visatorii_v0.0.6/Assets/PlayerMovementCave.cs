@@ -157,7 +157,7 @@ public class PlayerMovementCave : MonoBehaviour
         {
             //lose screen
             StartCoroutine(makeTransitionToLoseScreen());
-            Debug.Log("MORT, AI MURIT!");
+            //Debug.Log("MORT, AI MURIT!");
         }
     }
 
