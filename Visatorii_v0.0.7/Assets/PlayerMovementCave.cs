@@ -21,6 +21,7 @@ public class PlayerMovementCave : MonoBehaviour
     public Collider2D paianjenCollider;
     public Transition transitionManager;
     public AudioPlay AudioManager;
+    public AudioSource Audio;
 
     Vector2 Movement;
     Vector3 cameraOffset; //haha offset e artist bun haha
@@ -56,6 +57,7 @@ public class PlayerMovementCave : MonoBehaviour
             animator.SetFloat("Horizontal", Movement.x);
             animator.SetFloat("Speed", Movement.sqrMagnitude);
         }
+
     }
 
     IEnumerator makeTransition1()
@@ -176,6 +178,8 @@ public class PlayerMovementCave : MonoBehaviour
             Movement.x = -5;
             animator.SetFloat("Horizontal", -1);
             animator.SetFloat("Speed", 1);
+
+            Audio.Play();
         }
     }
 
